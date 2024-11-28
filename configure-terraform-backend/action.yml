@@ -1,0 +1,34 @@
+name: Configure Terraform backend.
+description: Composite action to create the terraform backend configuration file.
+
+inputs:
+  backend_bucket:
+    description: The type of AWS resource to identify.
+    required: true
+  backend_dynamo:
+    description: The environment identification value.
+    required: true
+  aws_region:
+    description: The AWS region where to search the resource.
+    required: true
+  working-directory:
+    required: true
+    description: wd
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get the resource
+      id: resource
+      run: |
+        cat > ${{inputs.working-directory}}/backend.tf << EOF
+          terraform {
+            backend "s3" {
+              bucket         = "${{inputs.backend_bucket}}"
+              dynamodb_table = "${{inputs.backend_dynamo}}"
+              key            = "${{github.repository}}/terraform.tfstate"
+              region         = "${{inputs.aws_region}}"
+            }
+          }
+        EOF
+      shell: bash

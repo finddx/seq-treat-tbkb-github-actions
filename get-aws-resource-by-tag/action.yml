@@ -1,0 +1,32 @@
+name: Composite action to search AWS resources by tag.
+description: Use the aws cli to identify resources, providing a tag filter value.
+
+inputs:
+  resource_type:
+    description: The type of AWS resource to identify.
+    required: true
+  tag_filters:
+    description: The full tag_filters value search.
+    required: true
+  aws_region:
+    description: The AWS region where to search the resource.
+    required: true
+outputs:
+  resource_id:
+    description: The full arn of the resource. Probably needs post processing.
+    value: ${{ steps.resource.outputs.ID }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get the resource
+      id: resource
+      run: |
+        echo "ID=$(aws resourcegroupstaggingapi get-resources \
+          ${{inputs.tag_filters}} \
+          --resource-type-filters '${{inputs.resource_type}}' \
+          --region ${{inputs.aws_region}} \
+          --query 'ResourceTagMappingList[0].ResourceARN' \
+          --output text )" \
+          >> "$GITHUB_OUTPUT"
+      shell: bash
