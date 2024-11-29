@@ -3,13 +3,13 @@ description: Composite action to create the terraform backend configuration file
 
 inputs:
   backend_bucket:
-    description: The type of AWS resource to identify.
+    description: Name of the bucket serving as the backend.
     required: true
   backend_dynamo:
-    description: The environment identification value.
+    description: Name of the DynamoDB used for terraform lock.
     required: true
   aws_region:
-    description: The AWS region where to search the resource.
+    description: The AWS region where the resources are located.
     required: true
   working-directory:
     required: true
